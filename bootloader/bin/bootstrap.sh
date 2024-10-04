@@ -94,6 +94,16 @@ move_mounts() {
   done
 }
 
+print_movetolocalstorage() {
+echo "Where is usb?"
+select yn in "sda4" "sda"; do
+    case $yn in
+         sda4 ) dd if=/dev/sda4 of=/dev/mmcblk1 bs=1M oflag=direct status=progress
+         sda ) dd if=/dev/sda of=/dev/mmcblk1 bs=1M oflag=direct status=progress
+    esac
+done
+}
+
 print_license() {
   local shimboot_version="$(cat /opt/.shimboot_version)"
   if [ -f "/opt/.shimboot_version_dev" ]; then
@@ -122,7 +132,7 @@ EOF
 }
 
 print_selector() {
-  local rootfs_partitions="$1"
+  local rootfs_partitions="$1"\
   local i=1
 
   echo "┌──────────────────────┐"
@@ -144,6 +154,7 @@ print_selector() {
   echo "q) reboot"
   echo "s) enter a shell"
   echo "l) view license"
+  echo "m) move to local storage"
 }
 
 get_selection() {
@@ -158,6 +169,11 @@ get_selection() {
     reset
     enable_debug_console "$TTY1"
     return 0
+  elif [ "$selection" = "m" ]; then
+  clear
+  print_movetolocalstorage
+  echo "Moving to local storage... this might break lol"
+  
   elif [ "$selection" = "l" ]; then
     clear
     print_license
@@ -168,7 +184,7 @@ get_selection() {
 
   local selection_cmd="$(echo "$selection" | cut -d' ' -f1)"
   if [ "$selection_cmd" = "rescue" ]; then
-    selection="$(echo "$selection" | cut -d' ' -f2-)"
+    selection="$(echo "d  $selection" | cut -d' ' -f2-)"
     rescue_mode="1"
   else
     rescue_mode=""
