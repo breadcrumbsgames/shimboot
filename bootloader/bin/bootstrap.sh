@@ -126,7 +126,7 @@ print_selector() {
   local i=1
 
   echo "┌──────────────────────┐"
-  echo "│ Shimboot OS Selector │"
+  echo "│ IdiotBoot OS Selector │"
   echo "└──────────────────────┘"
 
   if [ "${rootfs_partitions}" ]; then
